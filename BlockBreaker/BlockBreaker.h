@@ -77,11 +77,36 @@ typedef uint8_t bool;
 #endif
 #endif
 
-void	LogMessage(char Msg[80],uint8_t Level);
-bool	LoadResources(void);
-void	CleanUp(void);
-int		ApplySurface(int x, int y, SDL_Surface* source, SDL_Surface* dest);
-void	BeginGameLoop(void);
+struct Vect
+{
+	int x;
+	int y;
+};
+
+struct ObjD
+{
+	int PosX;
+	int PosY;
+	int RPosX;
+	int RPosY;
+	int VelX;
+	int VelY;			
+	uint8_t Status;	
+	uint8_t Frame;
+	SDL_Surface* Surf;
+}ObjArr[64]; //OBJ 0 = PADDLE, OBJ 1 = BALL, OBJ 2-4 = WALLS, Obj 5-63 = BRICKS
+
+
+		void		LogMessage(char Msg[80],uint8_t Level);
+		bool		LoadResources(void);
+		void		CleanUp(void);
+		int			ApplySurface(int x, int y, SDL_Surface* source, SDL_Surface* dest);
+		void		BeginGameLoop(void);
+struct	Vect		MakeVect(int x, int y);
+
+		bool		BallCollision(struct ObjD obj);		
+		bool		PaddleCollision(void);
+		void		Physics(void);
 
 #ifdef __cplusplus
 };
