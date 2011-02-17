@@ -19,4 +19,25 @@
     <CustomBuild Include="..\SDL_image\lib\jpeg.dll" />
     <CustomBuild Include="..\SDL_image\lib\SDL_image.dll" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="BlockBreaker.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BlockBreaker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Ball1.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Brick.jpg">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Paddle.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>
