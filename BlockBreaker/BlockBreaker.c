@@ -350,13 +350,13 @@ top:
 	ObjArr[4].Status = WALL;
 	ObjArr[4].Frame = 0;
 
-	ObjArr[4].Surf = Brick;
-	ObjArr[4].PosX = 120+200; //to screen width
-	ObjArr[4].PosY = 120; //0 to screen height
-	ObjArr[4].RPosX = BRICKX;
-	ObjArr[4].RPosY = BRICKY;
-	ObjArr[4].Status = ACTIVE;
-	ObjArr[4].Frame = 0;
+	ObjArr[5].Surf = Brick;
+	ObjArr[5].PosX = 120+200; //to screen width
+	ObjArr[5].PosY = 120; //0 to screen height
+	ObjArr[5].RPosX = BRICKX;
+	ObjArr[5].RPosY = BRICKY;
+	ObjArr[5].Status = ACTIVE;
+	ObjArr[5].Frame = 0;
 
 
 	SDL_ShowCursor(SDL_DISABLE);
