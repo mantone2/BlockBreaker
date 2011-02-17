@@ -51,14 +51,26 @@ static	uint8_t		LogMode;
 #define	BALLX		27
 #define	BALLY		28
 #define	BALLSCALE	.85
-#define BRICKX		55
-#define BRICKY		29
+#define BRICKX		49
+#define BRICKY		24
 #define	PADDLEX		122
 #define PADDLEY		24
 
+#define B1X1		50
+#define	B1Y1		0
+#define B1X2		114
+#define	B1Y2		32
+#define B2X1		120
+#define	B2Y1		0
+#define B2X2		186
+#define	B2Y2		37
+#define B3X1		188
+#define	B3Y1		0
+#define B3X2		261
+#define	B3Y2		39
 
-#define	DESTROY		1
-#define	INACTIVE	2
+#define	INACTIVE	1
+#define	DESTROY		2
 #define ACTIVE		4
 #define	WALL		8
 
@@ -163,13 +175,16 @@ bool LoadResources(void)
 	ColorKey = SDL_MapRGB(Paddle->format,0xFF,0xFF,0xFF);
 	SDL_SetColorKey(Paddle,SDL_SRCCOLORKEY,ColorKey);
 
-	LogMessage("Loading Brick.jpg",DEBUGLOG);
-	temp = IMG_Load("Brick.jpg");
+	LogMessage("Loading brick-sprites2.png",DEBUGLOG);
+	temp = IMG_Load("brick-sprites2.png");
 	if(temp == NULL)
 	{
 		return false;
 	}
 	Brick = SDL_DisplayFormat(temp);
+
+	ColorKey = SDL_MapRGB(Brick->format,0xFF,0xFF,0xFF);
+	SDL_SetColorKey(Brick,SDL_SRCCOLORKEY,ColorKey);
 
 	LogMessage("Loading Top.png",DEBUGLOG);
 	temp = IMG_Load("Top.png");
@@ -208,15 +223,64 @@ void	CleanUp(void)
 	SDL_Quit();
 }
 
-int		ApplySurface(int x, int y, SDL_Surface* source, SDL_Surface* dest)
+//int		ApplySurface(int x, int y, SDL_Surface* source, SDL_Surface* dest)
+//{
+//	SDL_Rect offset;	
+//	int err;
+
+//	offset.x = x;
+//	offset.y = y;
+
+//	err = SDL_BlitSurface(source,NULL,dest,&offset);
+//	return err;
+//}
+
+int			ApplySurface(struct ObjD obj, SDL_Surface* dest)
 {
 	SDL_Rect offset;
+	SDL_Rect clip;
 	int err;
 
-	offset.x = x;
-	offset.y = y;
+	offset.x = obj.PosX;
+	offset.y = obj.PosY;
 
-	err = SDL_BlitSurface(source,NULL,dest,&offset);
+	if(obj.Frame > 0)
+	{
+		if(obj.Frame / 6 == 0)
+		{
+			clip.x = B1X1;
+			clip.y = B1Y1;
+			clip.h = B1Y2 - B1Y1;
+			clip.w = B1X2 - B1X1;
+			offset.x -= 8;
+			offset.y -= 3;
+		}
+		else if (obj.Frame / 6 == 1)
+		{
+			clip.x = B2X1;
+			clip.y = B2Y1;
+			clip.h = B2Y2 - B2Y1;
+			clip.w = B2X2 - B2X1;
+			offset.x -= 11;
+			offset.y -= 5;
+		}
+		else if (obj.Frame / 6 == 2)
+		{
+			clip.x = B3X1;
+			clip.y = B3Y1;
+			clip.h = B3Y2 - B3Y1;
+			clip.w = B3X2 - B3X1;
+			offset.x -= 14;
+			offset.y -= 7;
+		}
+		err = SDL_BlitSurface(obj.Surf,&clip,dest,&offset);
+		return err;
+	}
+	clip.x = 0;
+	clip.y = 0;
+	clip.w = obj.RPosX;
+	clip.h = obj.RPosY;
+	err = SDL_BlitSurface(obj.Surf,&clip,dest,&offset);
 	return err;
 }
 
@@ -245,6 +309,8 @@ top:
 	ObjArr[0].Surf = Paddle;
 	ObjArr[0].PosX = (SCREEN_WIDTH / 2) - (ObjArr[0].Surf->w / 2);
 	ObjArr[0].PosY = (SCREEN_HEIGHT) - (ObjArr[0].Surf->h) - 16;
+	ObjArr[0].RPosX = PADDLEX;
+	ObjArr[0].RPosY = PADDLEY;
 	ObjArr[0].VelX = 0;
 	ObjArr[0].VelY = 0;
 	ObjArr[0].Status = ACTIVE;
@@ -253,6 +319,8 @@ top:
 	ObjArr[1].Surf = Ball;
 	ObjArr[1].PosX = ObjArr[0].PosX + PADDLEX/2 - BALLX/2;
 	ObjArr[1].PosY = ObjArr[0].PosY - BALLY;
+	ObjArr[1].RPosX = BALLX;
+	ObjArr[1].RPosY = BALLY;
 	ObjArr[1].VelX = 0;
 	ObjArr[1].VelY = 0;	
 	ObjArr[1].Status = ACTIVE;
@@ -264,21 +332,31 @@ top:
 	ObjArr[2].RPosX = SCREEN_WIDTH;
 	ObjArr[2].RPosY = 80;
 	ObjArr[2].Status = WALL;
-	
+	ObjArr[2].Frame = 0;
+
 	ObjArr[3].Surf = Side;
 	ObjArr[3].PosX = 0; //0 to 120
 	ObjArr[3].PosY = 0; // 0 to screen_height
 	ObjArr[3].RPosX = 120;
 	ObjArr[3].RPosY = SCREEN_HEIGHT;
 	ObjArr[3].Status = WALL;
-	
+	ObjArr[3].Frame = 0;
+
 	ObjArr[4].Surf = Side;
 	ObjArr[4].PosX = SCREEN_WIDTH - 120; //to screen width
 	ObjArr[4].PosY = 0; //0 to screen height
 	ObjArr[4].RPosX = SCREEN_WIDTH;
 	ObjArr[4].RPosY = SCREEN_HEIGHT;
 	ObjArr[4].Status = WALL;
+	ObjArr[4].Frame = 0;
 
+	ObjArr[4].Surf = Brick;
+	ObjArr[4].PosX = 120+200; //to screen width
+	ObjArr[4].PosY = 120; //0 to screen height
+	ObjArr[4].RPosX = BRICKX;
+	ObjArr[4].RPosY = BRICKY;
+	ObjArr[4].Status = ACTIVE;
+	ObjArr[4].Frame = 0;
 
 
 	SDL_ShowCursor(SDL_DISABLE);
@@ -368,15 +446,26 @@ top:
 		}
 
 		//Do Animations and stuff
-		SDL_FillRect( Screen, NULL, SDL_MapRGB( Screen->format, 0xFF, 0xFF, 0xFF ) );
+		SDL_FillRect( Screen, NULL, SDL_MapRGB( Screen->format, 0x4F, 0x4F, 0xFF ) );
 		for(i = 0; i < 64; i++)
 		{
-			if(ObjArr[i].Status >= 4)
+			if(ObjArr[i].Status >= 2)
 			{
-				ApplySurface(ObjArr[i].PosX,ObjArr[i].PosY,ObjArr[i].Surf,Screen);
+			//	ApplySurface(ObjArr[i].PosX,ObjArr[i].PosY,ObjArr[i].Surf,Screen);
+				ApplySurface(ObjArr[i],Screen);
+				if(ObjArr[i].Frame > 0)
+				{
+					ObjArr[i].Frame++;
+				}				
+				if (ObjArr[i].Frame / 6 > 3)
+				{
+					ObjArr[i].Frame = 0;
+					ObjArr[i].Status = INACTIVE;
+				}
 			}
 		}
 		SDL_Flip(Screen);
+
 		CurTick = SDL_GetTicks();
 		if(CurTick - LastTick < REFRESH)
 		{
@@ -542,7 +631,7 @@ void		Physics(void)
 			if(temp->Status == ACTIVE)
 			{
 				temp->Status=DESTROY;
-				temp->Frame = 0;
+				temp->Frame = 1;
 			}			
 		}
 	}

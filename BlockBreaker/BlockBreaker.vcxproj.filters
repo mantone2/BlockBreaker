@@ -29,15 +29,4 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Ball1.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Brick.jpg">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Paddle.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-  </ItemGroup>
 </Project>

@@ -100,7 +100,8 @@ struct ObjD
 		void		LogMessage(char Msg[80],uint8_t Level);
 		bool		LoadResources(void);
 		void		CleanUp(void);
-		int			ApplySurface(int x, int y, SDL_Surface* source, SDL_Surface* dest);
+//		int			ApplySurface(int x, int y, SDL_Surface* source, SDL_Surface* dest);
+		int			ApplyBlock(struct ObjD obj, SDL_Surface* dest);
 		void		BeginGameLoop(void);
 struct	Vect		MakeVect(int x, int y);
 
