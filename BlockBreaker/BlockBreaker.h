@@ -19,7 +19,7 @@
 //
 //		Four Factor Studios				(C) 2011
 //
-//		rev 0. Michael Antonelli		16-FEB-2011
+//		rev 1. Michael Antonelli		17-FEB-2011
 //
 //		BlockBreaker is the core executable for the BlockBreaker game prototype.
 //

@@ -19,7 +19,7 @@
 //
 //		Four Factor Studios				(C) 2011
 //
-//		rev 0. Michael Antonelli		16-FEB-2011
+//		rev 1. Michael Antonelli		17-FEB-2011
 //
 //		BlockBreaker is the core executable for the BlockBreaker game prototype.
 //
@@ -307,7 +307,7 @@ int			ApplySurface(struct ObjD obj, SDL_Surface* dest)
 			offset.x -= 11;
 			offset.y -= 5;
 		}
-		else if (obj.Frame / 6 == 2)
+		else if (obj.Frame / 6 >= 2)
 		{
 			clip.x = B3X1;
 			clip.y = B3Y1;
