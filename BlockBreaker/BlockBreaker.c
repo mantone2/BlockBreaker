@@ -298,10 +298,14 @@ void	BeginGameLoop(void)
 	int BrickY; 
 	int MouseX;
 	int MouseY;
-top:
-	GameState = 0;
+	bool Victory;
+
+top:	
 	Points = 0;
 	Lives = 3;
+death:
+	GameState = 0;
+	Victory = false;
 
 	BrickX = Brick->w;
 	BrickY = Brick->h;
@@ -351,13 +355,32 @@ top:
 	ObjArr[4].Frame = 0;
 
 	ObjArr[5].Surf = Brick;
-	ObjArr[5].PosX = 120+200; //to screen width
+	ObjArr[5].PosX = 120+77; //to screen width
 	ObjArr[5].PosY = 120; //0 to screen height
 	ObjArr[5].RPosX = BRICKX;
 	ObjArr[5].RPosY = BRICKY;
 	ObjArr[5].Status = ACTIVE;
 	ObjArr[5].Frame = 0;
 
+	for(i = 6; i < 25; i++)
+	{
+		ObjArr[i] = ObjArr[5];
+
+		if(i < 12)
+		{
+			ObjArr[i].PosX += (i - 5) * (BRICKX + 15);
+		}
+		else if(i < 18 )
+		{			
+			ObjArr[i].PosX += (i - 11) * (BRICKX + 15) - 40;
+			ObjArr[i].PosY += 90;
+		}						
+		else if( i < 25)
+		{
+			ObjArr[i].PosX += (i - 17) * (BRICKX + 15) - 77;
+			ObjArr[i].PosY += 180;
+		}
+	}
 
 	SDL_ShowCursor(SDL_DISABLE);
 	SDL_WarpMouse(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
@@ -405,6 +428,10 @@ top:
 					if(e.button.button == SDL_BUTTON_LEFT)
 					{
 						ObjArr[1].VelX = LastTick % 7;
+						if (ObjArr[1].VelX == 0)
+						{
+							ObjArr[1].VelX -= 3;
+						}
 						if(LastTick%2 == 0)
 						{
 							ObjArr[1].VelX *= -1;
@@ -440,7 +467,7 @@ top:
 		SDL_WarpMouse(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
 
 		//Move objects
-		if(GameState > 0)
+		if(GameState == 1)
 		{
 			Physics();
 		}
@@ -465,6 +492,32 @@ top:
 			}
 		}
 		SDL_Flip(Screen);
+
+		//Death Check
+		if(ObjArr[1].PosY > SCREEN_HEIGHT)
+		{
+			if(GameState > 0)
+			{
+				//lives - 1
+				goto death;
+			}
+		}
+		//Check for Victory
+		Victory = true;
+		for(i = 5; i < 64; i++)
+		{
+			if(ObjArr[i].Status > INACTIVE)
+			{
+				Victory = false;
+			}
+		}
+		if(Victory)
+		{
+			GameState++;
+			//display vict msg
+			SDL_Delay(1250);
+			goto death;
+		}
 
 		CurTick = SDL_GetTicks();
 		if(CurTick - LastTick < REFRESH)
@@ -536,11 +589,11 @@ bool		PaddleCollision(void)
 	l1 = ObjArr[1].PosX + ballOffsetX;
 	l2 = obj.PosX;
 	r1 = l1 + BALLX - ballOffsetX;
-	r2 = l2 + BRICKX;
+	r2 = l2 + PADDLEX;
 	t1 = ObjArr[1].PosY + ballOffsetY;
 	t2 = obj.PosY;
 	b1 = t1 + BALLY - ballOffsetY;
-	b2 = t2 + BRICKY;
+	b2 = t2 + PADDLEY;
 
 	if(b1 < t2)
 	{
@@ -584,6 +637,7 @@ void		Physics(void)
 	struct ObjD *ball,*temp;
 	int ballOffsetX;
 	int ballOffsetY;
+	int tempVal;
 
 	ballOffsetX = ((BALLX * (1 - BALLSCALE)) / 2);
 	ballOffsetY = ((BALLY * (1 - BALLSCALE)) / 2);
@@ -595,18 +649,27 @@ void		Physics(void)
 
 	if(PaddleCollision())
 	{
-		if(ball->PosX + ballOffsetX - ball->VelX <  ObjArr[0].PosX + 20)
+		if(ball->VelX == 0)
 		{
-			ball->VelX *= -1;
-			ball->VelY *= -1;
+			ball->VelX -= 4;
 		}
-		else if(ball->PosX -ball->VelX> ObjArr[0].PosX + PADDLEX - 20)
+		if(ball->PosX + BALLX - ballOffsetX <  ObjArr[0].PosX + 20)
 		{
 			ball->VelX *= -1;
 			ball->VelY *= -1;
+			ball->PosX = ObjArr[0].PosX - BALLX + ballOffsetX + 2;
+			ball->PosY -= 2;
+		}
+		else if(ball->PosX + ballOffsetX > ObjArr[0].PosX + PADDLEX - 20)
+		{
+			ball->VelX *= -1;
+			ball->VelY *= -1;
+			ball->PosX = ObjArr[0].PosX + PADDLEX + ballOffsetX + 2;
+			ball->PosY -= 2;
 		}
 		else
 		{
+			ball->PosY = ObjArr[0].PosY - BALLY + ballOffsetY- 1;	
 			ball->VelY *= -1;
 		}
 	}
@@ -616,16 +679,26 @@ void		Physics(void)
 		if(ObjArr[i].Status >= ACTIVE && BallCollision(ObjArr[i]))
 		{
 			temp = &ObjArr[i];
-			if(ball->PosX + ballOffsetX - ball->VelX <= temp->PosX)
+			if(ball->PosX + BALLX - ballOffsetX - ball->VelX <= temp->PosX) //the collision came from the left
 			{
+				ball->PosX = temp->PosX - BALLX - 1;
 				ball->VelX *= -1;
 			}
-			else if (ball->PosX - ball->VelX >= temp->PosX + temp->RPosX)
+			else if (ball->PosX + ballOffsetX - ball->VelX >= temp->PosX + temp->RPosX)//the collision came from the right
 			{
+				ball->PosX = temp->PosX + temp->RPosX + 1;
 				ball->VelX *= -1;
 			}
 			else 
 			{
+				if(ball->PosY + ballOffsetY + ball->VelY >= temp->PosY) //ball is below
+				{
+					ball->PosY = temp->PosY + temp->RPosY + 1;
+				}
+				else //ball is above
+				{
+					ball->PosY = temp->PosY - BALLY - 1;
+				}
 				ball->VelY *= -1;
 			}		
 			if(temp->Status == ACTIVE)
