@@ -37,10 +37,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>M:\Development\BlockBreaker\SDL_image\include;M:\Development\BlockBreaker\SDL\include;$(IncludePath)</IncludePath>
+    <IncludePath>M:\Development\BlockBreaker\SDL_mixer\include;M:\Development\BlockBreaker\SDL_image\include;M:\Development\BlockBreaker\SDL\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>M:\Development\BlockBreaker\SDL_image\lib;M:\Development\BlockBreaker\SDL\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>M:\Development\BlockBreaker\SDL_mixer\lib;M:\Development\BlockBreaker\SDL_image\lib;M:\Development\BlockBreaker\SDL\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -50,7 +50,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL.lib;SDLMain.lib;SDL_Image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL.lib;SDLMain.lib;SDL_Image.lib;SDL_Mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>

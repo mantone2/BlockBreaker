@@ -27,8 +27,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <SDL.h>
-#include <SDL_image.h>
 #include "BlockBreaker.h"
 //#include "MainMenu.h"
 
@@ -82,11 +80,26 @@ SDL_Surface	*	Screen;
 SDL_Surface *	Top;
 SDL_Surface	*	Side;
 
+SDL_AudioSpec*	Audio;
+
+//The music that will be played
+Mix_Music *music = NULL;
+
+//The sound effects that will be used
+Mix_Chunk *New = NULL;
+Mix_Chunk *Bounce = NULL;
+Mix_Chunk *Explode = NULL;
+
 int main(int argc, char* argv[])
 {
 	int err;
 	char msg[80];
 	uint32_t Color;
+	SDL_AudioSpec *desired;
+	SDL_AudioSpec *obtained;
+
+	desired = malloc(sizeof(SDL_AudioSpec));
+	obtained = malloc(sizeof(SDL_AudioSpec));
 
 	LogFile = fopen(ERROR_FILE,"w");
 	if(LogFile == NULL)
@@ -114,7 +127,14 @@ int main(int argc, char* argv[])
 		CleanUp();
 		goto Exit;
 	}
+	LogMessage("Starting up screen.",DEBUGLOG);
 	Screen = SDL_SetVideoMode(SCREEN_WIDTH,SCREEN_HEIGHT,SCREEN_BPP,SDL_HWSURFACE|SDL_DOUBLEBUF);
+	LogMessage("Starting up Audio.",DEBUGLOG);
+	if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 4096 ) == -1 )
+    {
+		LogMessage("Audio failed to start.",ERRORLOG);
+        goto Exit;
+    }
 	Color = SDL_MapRGB(Screen->format,0xFF,0xFF,0xFF);
 	if(Screen == NULL)
 	{
@@ -203,6 +223,28 @@ bool LoadResources(void)
 	Side = SDL_DisplayFormat(temp);
 
 	//Load Sounds
+	LogMessage("Loading Bounce.wav",DEBUGLOG);
+	Bounce = Mix_LoadWAV("Bounce.wav");
+	
+	if( Bounce <= 0)
+	{
+		return false;
+	}
+
+	LogMessage("Loading New.wav",DEBUGLOG);
+	New = Mix_LoadWAV("New.wav");
+	if( New <= 0)
+	{
+		return false;
+	}
+
+	LogMessage("Loading Explode.wav",DEBUGLOG);
+	Explode = Mix_LoadWAV("Explode.wav");
+	if( Explode <= 0)
+	{
+		return false;
+	}
+
 	LogMessage("Finished Loading Resources.",DEBUGLOG);
 	return true;
 }
@@ -219,7 +261,8 @@ void LogMessage(char Msg[80],uint8_t Level)
 void	CleanUp(void)
 {
 	LogMessage("Cleaning Up",DEBUGLOG);
-	fclose(LogFile);
+	fclose(LogFile);	
+	Mix_CloseAudio();
 	SDL_Quit();
 }
 
@@ -306,6 +349,8 @@ top:
 death:
 	GameState = 0;
 	Victory = false;
+
+	Mix_PlayChannel(-1,New,0);
 
 	BrickX = Brick->w;
 	BrickY = Brick->h;
@@ -672,6 +717,7 @@ void		Physics(void)
 			ball->PosY = ObjArr[0].PosY - BALLY + ballOffsetY- 1;	
 			ball->VelY *= -1;
 		}
+		Mix_PlayChannel(-1,Bounce,0);		
 	}
 
 	for(i = 2; i < 64; i++)
@@ -703,9 +749,14 @@ void		Physics(void)
 			}		
 			if(temp->Status == ACTIVE)
 			{
+				Mix_PlayChannel(-1,Explode,0);				
 				temp->Status=DESTROY;
 				temp->Frame = 1;
 			}			
+			else
+			{				
+				Mix_PlayChannel(-1,Bounce,0);				
+			}
 		}
 	}
 

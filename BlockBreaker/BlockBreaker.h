@@ -77,6 +77,10 @@ typedef uint8_t bool;
 #endif
 #endif
 
+#include <SDL.h>
+#include <SDL_mixer.h>
+#include <SDL_image.h>
+
 struct Vect
 {
 	int x;
