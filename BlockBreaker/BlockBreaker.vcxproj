@@ -43,8 +43,8 @@
     <LibraryPath>M:\Development\BlockBreaker\SDL_mixer\lib;M:\Development\BlockBreaker\SDL_image\lib;M:\Development\BlockBreaker\SDL\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>M:\Development\BlockBreaker\SDL_mixer\include;M:\Development\BlockBreaker\SDL_image\include;M:\Development\BlockBreaker\SDL\include;$(IncludePath)</IncludePath>
-    <LibraryPath>M:\Development\BlockBreaker\SDL_mixer\lib;M:\Development\BlockBreaker\SDL_image\lib;M:\Development\BlockBreaker\SDL\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)SDL_mixer\include;$(SolutionDir)SDL_image\include;$(SolutionDir)SDL\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)SDL_mixer\lib;$(SolutionDir)SDL_image\lib;$(SolutionDir)SDL\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
